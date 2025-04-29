@@ -31,9 +31,10 @@ app.options('*', cors());
 
 // app.options('*', cors());
 
+app.use(express.json()); // Handles JSON data
+
 //  Middleware (Correct Order)
 app.use(express.urlencoded({ extended: true })); // Handles URL-encoded data
-app.use(express.json()); // Handles JSON data
 
 //  Route Setup
 app.use("/api/admin", adminRoutes);  

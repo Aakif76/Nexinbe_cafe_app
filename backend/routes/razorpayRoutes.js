@@ -34,7 +34,7 @@ router.post("/checkout", async (req, res) => {
       amount: amountInPaisa,
       currency: "INR",
       receipt: `receipt_order_${Date.now()}`,
-      payment_capture: 1 // Auto-capture payment
+      payment_capture: 1
     };
 
     const order = await razorpay.orders.create(options);
