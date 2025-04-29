@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../Navbar"; // Import the default Navbar
 import UserNavbar from "./UserNavbar"; // Import the UserNavbar for logged-in users
 
+const BACKEND_URL = "https://nexinbe-cafe-app.vercel.app";
+
 const Order = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [order, setOrder] = useState(null);
+  const { orderId } = useParams(); // get orderId from URL
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -14,6 +20,14 @@ const Order = () => {
 
     checkLoginStatus(); // Run the login check when the component mounts
   }, []); // Empty dependency array ensures this runs only once after the component mounts
+
+  useEffect(() => {
+    if (orderId) {
+      axios.get(`${BACKEND_URL}/api/user/order/${orderId}`)
+        .then(res => setOrder(res.data))
+        .catch(() => setOrder(null));
+    }
+  }, [orderId]);
 
   return (
     <>

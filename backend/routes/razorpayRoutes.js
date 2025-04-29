@@ -2,6 +2,7 @@ const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const router = express.Router();
+const Order = require("../models/Order"); // Add this at the top
 
 // Validate environment variables
 if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -107,19 +108,25 @@ router.post("/paymentVerification", async (req, res) => {
       });
     }
 
+    // Save order to DB
+    const { cartItems, customerName, totalAmount } = req.body; // Expect these from frontend
+    const newOrder = new Order({
+      customerName,
+      items: cartItems,
+      total: totalAmount,
+      status: "paid",
+      paymentId: razorpay_payment_id,
+      orderId: razorpay_order_id,
+    });
+    await newOrder.save();
+
     // Payment is successful and verified
     return res.status(200).json({
       success: true,
       message: "Payment verified successfully!",
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
-      paymentDetails: {
-        amount: payment.amount / 100, // Convert back to rupees
-        currency: payment.currency,
-        status: payment.status,
-        method: payment.method,
-        createdAt: payment.created_at
-      }
+      order: newOrder,
     });
 
   } catch (error) {

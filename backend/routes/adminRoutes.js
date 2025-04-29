@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
+const Order = require("../models/Order"); // Add at the top
 const router = express.Router();
 const { adminLogin, getUserStats } = require("../controllers/adminController");
 
@@ -95,6 +96,16 @@ router.post('/verify-password', async (req, res) => {
   } catch (error) {
     console.error('Error verifying password:', error);
     res.status(500).json({ message: 'Failed to verify password' });
+  }
+});
+
+// Get all orders (for admin)
+router.get("/orders", async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch orders" });
   }
 });
 
