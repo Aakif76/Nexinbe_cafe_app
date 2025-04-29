@@ -34,7 +34,14 @@ const Payment = () => {
     try {
       setLoading(true);
 
+      if (!amount || isNaN(amount) || amount <= 0) {
+        alert("Invalid order amount. Please return to cart.");
+        navigate("/cart");
+        return;
+      }
+
       // ✅ Create order on backend
+      console.log("Amount being sent to backend:", amount);
       const { data } = await axios.post(`${BACKEND_URL}/api/razorpay/checkout`, {
         amount,
       });
